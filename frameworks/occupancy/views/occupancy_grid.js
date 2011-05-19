@@ -6,57 +6,6 @@
 
 sc_require('views/occupancy_item');
 
-BBA.OccupancyNewItem = SC.Object.extend({
-
-  hasMultipleReservables: YES,
-
-  period: function() {
-    var start = this.get('begins_at'),
-        end = this.get('ends_at');
-
-    // If period ends on the same day that begins, adjust it
-    if (start && end && SC.DateTime.compareDate(start, end) >= 0) {
-      end = start.advance({ day: 1 });
-    }
-
-    return this.get('owner')._alignPeriod(start, end);
-  }.property(),
-
-  reservable: function(key, value) {
-    if (value === undefined) {
-      var reservables = this.get('reservables');
-      if (reservables) return reservables.get('firstObject');
-    } else {
-      this.set('reservables', [value]);
-    }
-  }.property(),
-
-  reservableId: function() {
-    return this.getPath('reservable.id');
-  }.property(),
-
-  attributes: function() {
-    return {
-      begins_at: this.get('begins_at'),
-      ends_at: this.get('ends_at'),
-      reservableId: this.getPath('reservable.id')
-    };
-  }.property(),
-
-  align: function() {
-    var alignedPeriod = this.get('owner')._alignPeriod(this.get('starts_at'),
-                                                       this.get('ends_at'));
-    this.set('starts_at', alignedPeriod.get('start'));
-    this.set('ends_at', alignedPeriod.get('end'));
-    return alignedPeriod;
-  },
-
-  toString: function() {
-    return "Nová rezervace".loc();
-  }
-
-});
-
 /** @class
 
   @extends SC.View
