@@ -99,7 +99,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     Columns width will be calculated depending on number of days
     in period.
 
-    @type Valhalla.Period
+    @type BBA.Period
     @default null
   */
   period: null,
@@ -204,7 +204,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     var period = this.get('period');
     if (period.isDateInPeriod(date)) {
       var periodTillDate, offset;
-      periodTillDate = Valhalla.Period.create({
+      periodTillDate = BBA.Period.create({
         start: period.get('start'),
         end: date
       });

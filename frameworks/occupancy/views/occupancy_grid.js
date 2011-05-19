@@ -243,7 +243,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
       endsAt = item.get('ends_at');
     }
 
-    period = Valhalla.Period.create({
+    period = BBA.Period.create({
       start: beginsAt, end: endsAt
     });
 
@@ -305,7 +305,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private
     Returns a width for given period.
 
-    @param {Valhalla.Period} period
+    @param {BBA.Period} period
     @returns {Number} A width.
   */
   _widthForPeriod: function(period) {
@@ -358,7 +358,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     Returns an reservable for given y-position inside grid.
 
     @param {Number} offset
-    @returns {Valhalla.Accommodation}
+    @returns {BBA.Accommodation}
   */
   _reservableForTopOffset: function(offset) {
     var rowHeight = this.get('rowHeight'),
@@ -369,7 +369,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private */
   _alignPeriod: function(start, end) {
     var period, del;
-    period = Valhalla.Period.create({
+    period = BBA.Period.create({
       start: start, end: end
     });
     var del = this.getPath('delegate');
