@@ -3,7 +3,7 @@
 # Copyright: ©2011 Blueberry.cz Apps s.r.o.
 # ===========================================================================
 
-config :occupancy_view, :required => :sproutcore
+config :occupancy, :required => :sproutcore
 
-config :bba_occupancy_view, :required => :occupancy_view
+config :occupancy_view, :required => :occupancy
 
