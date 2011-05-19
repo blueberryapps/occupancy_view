@@ -114,7 +114,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
 
   reservablesList: SC.ContainerView.design({
     classNames: 'occupancy-reservables-container',
-    layout: { top: 19, left: 0, bottom: 14, width: 90 },
+    layout: { top: BBA.OCCUPANCY_HEADER_HEIGHT, left: 0, bottom: 14, width: 90 },
     contentView: SC.ListView.design({
       classNames: 'occupancy-reservables-list',
       contentBinding: '.parentView.parentView.reservables',
@@ -124,6 +124,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   }),
 
   rightView: SC.View.design({
+    classNames: 'occupancy-right-container',
     layout: { top: 0, right: 0, bottom: 0, left: 90 },
     childViews: 'headerView scrollView'.w(),
 
@@ -143,7 +144,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       @type SC.ScrollView
     */
     scrollView: SC.ScrollView.design({
-      layout: { top: 19, right: 0, bottom: 0, left: 0 },
+      layout: { top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, right: 0, bottom: 0, left: 0 },
       borderStyle: SC.BORDER_NONE,
       contentView: BBA.OccupancyGridView.design({
       }),
