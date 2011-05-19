@@ -69,7 +69,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   mouseDown: function(evt) {
     sc_super();
     this._lastPoint = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY }, null);
-    this._ghostItem = BBA.OccupancyNewItem.create({
+    this._ghostItem = BBA.OccupancyGhostItem.create({
       owner: this,
       reservables: [this._reservableForTopOffset(this._lastPoint.y)],
       begins_at: this._dateTimeForLeftOffset(this._lastPoint.x),
@@ -160,7 +160,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
       top: this._topOffsetForItem(item),
       left: this._leftOffsetForItem(item),
       width: this._widthForItem(item),
-      height: this.get('rowHeight')
+      height: this.get('rowHeight') - 1
     };
   },
 
