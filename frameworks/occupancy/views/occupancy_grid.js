@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   BBA.OccupancyGridView
-// Copyright: ©2011 My Company, Inc.
+// Copyright: ©2011 Bluebeerry.cz Apps s.r.o.
 // ==========================================================================
 /*globals BBA */
 
