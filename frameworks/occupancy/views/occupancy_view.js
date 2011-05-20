@@ -4,8 +4,8 @@
 // ==========================================================================
 /*globals BBA */
 
-sc_require('views/occupancy_header');
-sc_require('views/occupancy_grid');
+sc_require('views/occupancy_header_view');
+sc_require('views/occupancy_grid_view');
 
 BBA.OCCUPANCY_ROW_HEIGHT = 24;
 BBA.OCCUPANCY_HEADER_HEIGHT = 18;
@@ -258,7 +258,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     var reservations = this.get('reservations'),
         reservableOutages = this.get('reservableOutages'),
         items = [];
-    items.pushObjects(reservableOutages);
+    // items.pushObjects(reservableOutages);
     if (reservations) items.pushObjects(reservations.toArray());
     return items;
   }.property('reservations', 'reservableOutages').cacheable(),

@@ -107,10 +107,10 @@ BBA.OccupancyItemView = SC.View.extend(
     date = gridView._dateTimeForLeftOffset(pointInGrid.x);
     if (this._isRightHandleEvent) {
       period = gridView._alignPeriod(null, date);
-      this._setProposedAttribute('ends_at', period.get('end'));
+      this._setProposedAttribute('endsAt', period.get('end'));
     } else {
       period = gridView._alignPeriod(date, null);
-      this._setProposedAttribute('begins_at', period.get('start'));
+      this._setProposedAttribute('beginsAt', period.get('start'));
     }
     if (this._validateProposedAttributes()) {
       this._updateLayout();
@@ -132,7 +132,7 @@ BBA.OccupancyItemView = SC.View.extend(
     if (this.get('isBusy')) evt.stop();
     this._initProposedAttributes();
     this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });;
-    this._reservationBeginHour = this.getPath('content.begins_at').get('hour');
+    this._reservationBeginHour = this.getPath('content.beginsAt').get('hour');
     return YES;
   },
 
@@ -153,9 +153,9 @@ BBA.OccupancyItemView = SC.View.extend(
       beginsAt = beginsAt.adjust({ hour: this._reservationBeginHour });
       reservable = gridView._reservableForTopOffset(gridPoint.y);
 
-      if (reservable) this._setProposedAttribute('reservable_id', reservable.get('id'));
-      this._setProposedAttribute('begins_at', beginsAt);
-      this._setProposedAttribute('ends_at', beginsAt.advance({ hour: length }));
+      if (reservable) this._setProposedAttribute('reservableId', reservable.get('id'));
+      this._setProposedAttribute('beginsAt', beginsAt);
+      this._setProposedAttribute('endsAt', beginsAt.advance({ hour: length }));
 
       if (this._validateProposedAttributes()) {
         this._updateLayout();
@@ -199,17 +199,12 @@ BBA.OccupancyItemView = SC.View.extend(
     @returns {String} A title.
   */
   _contentTitle: function() {
-    var content = this.get('content'),
-        titleKey = this.get('titleKey'),
-        title;
-    if (content && titleKey) {
-      title = content.get(titleKey);
-      if (SC.typeOf(value) !== SC.T_STRING) title = title.toString();
-    } else if (content) {
-      title = content;
-      if (SC.typeOf(content) !== SC.T_STRING) title = title.toString();
+    var content = this.get('content');
+    if (content) {
+      return content.toString();
+    } else {
+      return sc_super();
     }
-    return title;
   },
 
   /** @private */
@@ -241,9 +236,9 @@ BBA.OccupancyItemView = SC.View.extend(
     this.adjust(layout);
     this._validatedAttributes = SC.Object.create({
       content: this.get('content'),
-      begins_at: this._proposedAttributes.begins_at,
-      ends_at: this._proposedAttributes.ends_at,
-      reservable_id: this._proposedAttributes.reservable_id
+      beginsAt: this._proposedAttributes.beginsAt,
+      endsAt: this._proposedAttributes.endsAt,
+      reservableId: this._proposedAttributes.reservableId
     });
   },
 
@@ -255,16 +250,16 @@ BBA.OccupancyItemView = SC.View.extend(
         writtenAnything = NO;
     if (!validatedAttributes) return;
     content.beginPropertyChanges();
-    if (!SC.empty(validatedAttributes.begins_at)) {
-      content.set('begins_at', validatedAttributes.begins_at);
+    if (!SC.empty(validatedAttributes.beginsAt)) {
+      content.set('beginsAt', validatedAttributes.beginsAt);
       writtenAnything = YES;
     }
-    if (!SC.empty(validatedAttributes.ends_at)) {
-      content.set('ends_at', validatedAttributes.ends_at);
+    if (!SC.empty(validatedAttributes.endsAt)) {
+      content.set('endsAt', validatedAttributes.endsAt);
       writtenAnything = YES;
     }
-    if (!SC.empty(validatedAttributes.reservable_id)) {
-      content.set('reservableId', validatedAttributes.reservable_id);
+    if (!SC.empty(validatedAttributes.reservableId)) {
+      content.set('reservableId', validatedAttributes.reservableId);
       writtenAnything = YES;
     }
     content.endPropertyChanges();

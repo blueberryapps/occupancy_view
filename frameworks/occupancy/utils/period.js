@@ -13,16 +13,29 @@
 BBA.Period = SC.Object.extend(
 /** @scope BBA.Period.prototype */ {
 
-  /*
-   * A start of given period.
-   */
+  /**
+    Walk like a duck.
+
+    @type Boolean
+    @default YES
+  */
+  isPeriod: YES,
+
+  /**
+    A start of given period.
+
+    @type SC.DateTime
+    @default null
+  */
   start: null,
 
-  /*
-   * An end of given period.
-   */
-  end: null,
+  /**
+    An end of given period.
 
+    @type SC.DateTime
+    @default null
+  */
+  end: null,
 
   // ..........................................................
   // COMPUTED PROPERTIES

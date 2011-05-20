@@ -4,7 +4,7 @@
 // ==========================================================================
 /*globals BBA */
 
-sc_require('views/occupancy_item');
+sc_require('views/occupancy_item_view');
 
 /** @class
 
@@ -23,8 +23,6 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   occupancyView: SC.outlet('parentView.parentView.parentView.parentView'),
 
   contentBinding: '.occupancyView.itemsForGridView',
-
-  delegateBinding: '.occupancyView.reservations',
 
   reservablesBinding: '.occupancyView.reservables',
 
@@ -69,11 +67,12 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   mouseDown: function(evt) {
     sc_super();
     this._lastPoint = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY }, null);
+    var reservable = this._reservableForTopOffset(this._lastPoint.y);
     this._ghostItem = BBA.OccupancyGhostItem.create({
       owner: this,
-      reservables: [this._reservableForTopOffset(this._lastPoint.y)],
-      begins_at: this._dateTimeForLeftOffset(this._lastPoint.x),
-      ends_at: this._dateTimeForLeftOffset(this._lastPoint.x)
+      reservableId: reservable && reservable.get('id'),
+      beginsAt: this._dateTimeForLeftOffset(this._lastPoint.x),
+      endsAt: this._dateTimeForLeftOffset(this._lastPoint.x)
     });
     this._ghostItem.align();
     return YES;
@@ -92,12 +91,18 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
 
     var del = this.getPath('delegate');
     if (del && del.validateProposedChange) {
-      var attributes = SC.Object.create(ghostItem.get('attributes'));
-      attributes.set('ends_at', endsAt);
-      if (!del.validateProposedChange(null, attributes)) return;
+      var proposed = SC.copy(ghostItem);
+      proposed.set('endsAt', endsAt);
+      if (del.validateProposedChange(null, proposed)) {
+        proposed.destroy();
+        ghostItem.set('endsAt', endsAt);
+      } else {
+        proposed.destroy();
+        return;
+      }
     }
 
-    ghostItem.set('ends_at', endsAt);
+    ghostItem.set('endsAt', endsAt);
     this.notifyPropertyChange('ghostItem');
   },
 
@@ -168,28 +173,28 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     Returns layout hash for given item while keeping
     account of overlay attributes.
 
-    @param {SC.Object} item
+    @param {BBA.OccupancyItem} item
     @param {SC.View} itemView
     @returns {Object} A layout hash.
   */
   _layoutForContentItemWithOverlay: function(item, itemView) {
     var reservableId, beginsAt, endsAt, period;
-    if (itemView._proposedAttributes.reservable_id) {
-      reservableId = itemView._proposedAttributes.reservable_id;
+    if (itemView._proposedAttributes.reservableId) {
+      reservableId = itemView._proposedAttributes.reservableId;
     } else {
       reservableId = item.get('reservableId');
     }
 
-    if (itemView._proposedAttributes.begins_at) {
-      beginsAt = itemView._proposedAttributes.begins_at;
+    if (itemView._proposedAttributes.beginsAt) {
+      beginsAt = itemView._proposedAttributes.beginsAt;
     } else {
-      beginsAt = item.get('begins_at');
+      beginsAt = item.get('beginsAt');
     }
 
-    if (itemView._proposedAttributes.ends_at) {
-      endsAt = itemView._proposedAttributes.ends_at;
+    if (itemView._proposedAttributes.endsAt) {
+      endsAt = itemView._proposedAttributes.endsAt;
     } else {
-      endsAt = item.get('ends_at');
+      endsAt = item.get('endsAt');
     }
 
     period = BBA.Period.create({
@@ -207,7 +212,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private
     Returns a top offset for given grid item.
 
-    @param {SC.Object} item
+    @param {BBA.OccupancyItem} item
     @returns {Number} A top offset.
   */
   _topOffsetForItem: function(item) {
@@ -218,7 +223,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private
     Returns a top offset for given reservable.
 
-    @param {SC.Object} reservableId
+    @param {String} reservableId
     @returns {Number} A top offset.
   */
   _topOffsetForReservableId: function(reservableId) {
@@ -233,7 +238,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private
     Returns a left offset for given grid item.
 
-    @param {SC.Object} item
+    @param {BBA.OccupancyItem} item
     @returns {Number} A left offset.
   */
   _leftOffsetForItem: function(item) {
@@ -243,7 +248,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   /** @private
     Returns a width for given grid item.
 
-    @param {SC.Object} item
+    @param {BBA.OccupancyItem} item
     @returns {Number} A width.
   */
   _widthForItem: function(item) {
