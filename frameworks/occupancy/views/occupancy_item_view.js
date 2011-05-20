@@ -67,9 +67,10 @@ BBA.OccupancyItemView = SC.View.extend(
     @type Boolean
   */
   isVisible: function() {
-    var content = this.get('content');
-    if (!content) return YES;
-    else return !content.get('isCanceled');
+    var content = this.get('content'),
+        reservation = content && content.get('reservation');
+    if (!reservation) return YES;
+    else return !reservation.get('isCanceled');
   }.property('content').cacheable(),
 
   isBusy: function() {

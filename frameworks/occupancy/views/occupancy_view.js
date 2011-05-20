@@ -258,7 +258,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     var reservations = this.get('reservations'),
         reservableOutages = this.get('reservableOutages'),
         items = [];
-    // items.pushObjects(reservableOutages);
+    items.pushObjects(reservableOutages);
     if (reservations) items.pushObjects(reservations.toArray());
     return items;
   }.property('reservations', 'reservableOutages').cacheable(),
