@@ -134,10 +134,14 @@ BBA.OccupancyHeaderView = SC.View.extend(
     @param {Number} value
   */
   _createChildViewForContentIndex: function(contentIndex, value) {
-    var exampleView, layout;
+    var exampleView, layout, classNames = [];
     exampleView = this.get('exampleView');
+    if (SC.DateTime.compareDate(value, SC.DateTime.create()) === 0) {
+      classNames = 'today'.w();
+    }
     layout = this.layoutForContentIndex(contentIndex);
     this.appendChild(exampleView.create({
+      classNames: classNames,
       layout: layout,
       value: value
     }));

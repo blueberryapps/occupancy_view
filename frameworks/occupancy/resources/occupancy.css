@@ -25,6 +25,9 @@
   font-size: 95%;
   color: #444;
 }
+.occupancy-view .occupancy-header .sc-label-view.today {
+  font-weight: bold !important;
+}
 
 .occupancy-view .occupancy-reservables-container {
   border-top: 1px solid #8B8B8B;
