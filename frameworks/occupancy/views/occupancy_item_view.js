@@ -51,6 +51,8 @@ BBA.OccupancyItemView = SC.View.extend(
 
   render: function(context) {
     sc_super();
+    var content = this.get('content');
+    if (content && content.isOutage) context.addClass('outage');
     context = context.begin('div').addClass('outline');
     context.push(this._contentTitle());
     context.end();

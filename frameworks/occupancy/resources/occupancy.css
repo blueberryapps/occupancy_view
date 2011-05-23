@@ -48,25 +48,38 @@
   background-color: #fff;
 }
 
-.occupancy-view .occupancy-item-view {
-  background-color: #eee;
-}
+/** Item view */
 .occupancy-view .occupancy-item-view .outline {
+  background-color: #eee;
   padding: 0 5px;
   border: 1px solid #999;
   height: 21px;
   line-height: 22px;
 }
 
-.occupancy-view .occupancy-item-view.ghost {
-  opacity: .6;
-}
-
+/** Item handle view */
 .occupancy-view .occupancy-item-handle-view {
   background-color: #999;
   cursor: col-resize;
 }
 
+/** outage item view */
+.occupancy-view .occupancy-item-view.outage .outline {
+  border-color: #a00;
+  background-color: #c00;
+  color: #fff;
+}
+.occupancy-view .outage .occupancy-item-handle-view {
+  cursor: default;
+  background-color: transparent;
+}
+
+/** Ghost item view */
+.occupancy-view .occupancy-item-view.ghost {
+  opacity: .6;
+}
+
+/** Disabled item view */
 .occupancy-view .occupancy-item-view.disabled {
   border-color: #FFF;
   color: #ccc;
