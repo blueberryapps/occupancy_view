@@ -131,9 +131,10 @@ BBA.OccupancyItemView = SC.View.extend(
 
   mouseDown: function(evt) {
     if (this.get('isBusy')) evt.stop();
+    var beginsAt = this.getPath('content.beginsAt');
     this._initProposedAttributes();
     this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });;
-    this._reservationBeginHour = this.getPath('content.beginsAt').get('hour');
+    this._reservationBeginHour = beginsAt.get('hour');
     return YES;
   },
 
