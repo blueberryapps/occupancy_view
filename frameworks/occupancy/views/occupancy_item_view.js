@@ -51,8 +51,7 @@ BBA.OccupancyItemView = SC.View.extend(
 
   render: function(context) {
     sc_super();
-    var content = this.get('content');
-    if (content && content.isOutage) context.addClass('outage');
+    this._setupClassNamesOnContext(context);
     context = context.begin('div').addClass('outline');
     context.push(this._contentTitle());
     context.end();
@@ -195,6 +194,19 @@ BBA.OccupancyItemView = SC.View.extend(
   // ..........................................................
   // PRIVATE METHODS
   //
+
+  /** @private
+    Setups all necessary class names on context.
+
+    @param {SC.RenderContext} context
+  */
+  _setupClassNamesOnContext: function(context) {
+    var content = this.get('content');
+    if (content) {
+      if (content.isOutage) context.addClass('outage');
+      if (content.classNames) context.addClass(content.classNames);
+    }
+  },
 
   /** @private
     Returns a title from content. Uses `titleKey` if is set,
