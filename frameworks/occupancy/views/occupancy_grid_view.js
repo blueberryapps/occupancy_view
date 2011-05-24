@@ -82,7 +82,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     var point = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY }, null),
         endsAt = this._dateTimeForLeftOffset(point.x),
         ghostItem = this._ghostItem,
-        reservables, ghostItem, idx;
+        reservables, idx;
 
     if (!this.get('ghostItem')) {
       this.set('ghostItem', ghostItem);
@@ -326,7 +326,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     period = BBA.Period.create({
       start: start, end: end
     });
-    var del = this.getPath('delegate');
+    del = this.getPath('delegate');
     if (del && del.alignReservationPeriod) {
       return del.alignReservationPeriod(period);
     } else {

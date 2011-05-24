@@ -11,7 +11,7 @@ BBA.OccupancyGhostItem = BBA.OccupancyItem.extend({
   hasMultipleReservables: YES,
 
   align: function(owner) {
-    var owner = owner || this.get('owner');
+    owner = owner || this.get('owner');
     var alignedPeriod = owner._alignPeriod(this.get('startsAt'),
                                                        this.get('endsAt'));
     this.set('startsAt', alignedPeriod.get('start'));

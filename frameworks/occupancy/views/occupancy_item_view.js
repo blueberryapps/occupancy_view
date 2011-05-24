@@ -104,7 +104,7 @@ BBA.OccupancyItemView = SC.View.extend(
     reservation beginning or end.
   */
   mouseDraggedInHandle: function(evt) {
-    var gridView, pointInGrid, date, date;
+    var gridView, pointInGrid, date;
     gridView = this.get('owner');
     pointInGrid = gridView.convertFrameFromView({ x: evt.pageX, y: evt.pageY });
     date = gridView._dateTimeForLeftOffset(pointInGrid.x);
@@ -135,7 +135,7 @@ BBA.OccupancyItemView = SC.View.extend(
     if (this.get('isBusy')) evt.stop();
     var beginsAt = this.getPath('content.beginsAt');
     this._initProposedAttributes();
-    this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });;
+    this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });
     this._reservationBeginHour = beginsAt.get('hour');
     return YES;
   },
