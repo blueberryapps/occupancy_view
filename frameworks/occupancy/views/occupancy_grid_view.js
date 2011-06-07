@@ -41,10 +41,10 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   //
 
   /**
-    Called from parent view (OccupancyView) whenever grid
-    needs to be updated.
+    Called from parent view (OccupancyView) whenever grid's
+    height needs to be updated.
   */
-  updateGrid: function() {
+  updateGridHeight: function() {
     var reservablesLength = this.getPath('reservables.length'),
         rowHeight = this.get('rowHeight');
     this.adjust('height', rowHeight * (reservablesLength));

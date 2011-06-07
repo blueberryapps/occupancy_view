@@ -292,9 +292,8 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
 
   /** @private */
   _gridViewShouldUpdate: function(a) {
-    this.get('gridView').updateGrid();
+    this.get('gridView').updateGridHeight();
     this.notifyPropertyChange('reservableOutages');
-    this.notifyPropertyChange('itemsForGridView');
   }.observes('reservations', 'reservables'),
 
   /** @private */
