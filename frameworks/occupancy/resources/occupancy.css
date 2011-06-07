@@ -64,7 +64,19 @@
 .occupancy-view .occupancy-item-handle-view {
   background-color: #999;
   cursor: col-resize;
+  position: absolute;
+  width: 5px;
+  top: 0;
+  bottom: 0;
 }
+.occupancy-view .occupancy-item-handle-view.left {
+  left: 0;
+}
+.occupancy-view .occupancy-item-handle-view.right {
+  top: 0;
+  right: 0;
+}
+
 
 /** outage item view */
 .occupancy-view .occupancy-item-view.outage .outline {

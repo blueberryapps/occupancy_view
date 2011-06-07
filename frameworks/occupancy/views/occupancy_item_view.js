@@ -22,36 +22,13 @@ BBA.OccupancyItemView = SC.View.extend(
   useOverlayAttributes: NO,
 
   // ..........................................................
-  // CHILD VIEWS
-  //
-
-  childViews: "leftHandle rightHandle".w(),
-
-  leftHandle: SC.View.design({
-    classNames: 'occupancy-item-handle-view'.w(),
-    layout: { top: 0, left: 0, bottom: 0, width: 5 },
-    mouseDown: function(evt) {
-      var pv = this.get('parentView');
-      if (pv) return pv.mouseDownInHandle(evt, 'left');
-    }
-  }),
-
-  rightHandle: SC.View.design({
-    classNames: 'occupancy-item-handle-view'.w(),
-    layout: { top: 0, right: 0, bottom: 0, width: 5 },
-    mouseDown: function(evt) {
-      var pv = this.get('parentView');
-      if (pv) return pv.mouseDownInHandle(evt, 'right');
-    }
-  }),
-
-  // ..........................................................
   // SUBCLASS METHODS
   //
 
   render: function(context) {
-    sc_super();
     this._setupClassNamesOnContext(context);
+    context.begin('div').addClass('occupancy-item-handle-view left'.w()).end();
+    context.begin('div').addClass('occupancy-item-handle-view right'.w()).end();
     context = context.begin('div').addClass('outline');
     context.push(this._contentTitle());
     context.end();
@@ -74,6 +51,11 @@ BBA.OccupancyItemView = SC.View.extend(
     else return !reservation.get('isCanceled');
   }.property('content').cacheable(),
 
+  /** @field
+    Returns `YES` if content is busy (has SC.Record.BUSY state)
+
+    @type Boolean
+  */
   isBusy: function() {
     var content = this.get('content');
     return content && !!(content.get('status') & SC.Record.BUSY);
@@ -86,15 +68,9 @@ BBA.OccupancyItemView = SC.View.extend(
   /**
     Mouse down handler for left and right handles.
   */
-  mouseDownInHandle: function(evt, rightOrLeft) {
-    var responder = this.getPath('pane.rootResponder');
-    if (!responder) return NO;
-    // we're not the source view of the mouseDown, so we need to capture events manually to receive them
-    responder.dragDidStart(this) ;
+  mouseDownInHandle: function(evt) {
     this._initProposedAttributes();
     this._lastX = evt.pageX;
-    if (rightOrLeft == 'left') this._isLeftHandleEvent = YES;
-    else this._isRightHandleEvent = YES;
     return YES;
   },
 
@@ -114,7 +90,7 @@ BBA.OccupancyItemView = SC.View.extend(
       period = gridView._alignPeriod(date, null);
       this._setProposedAttribute('beginsAt', period.get('start'));
     }
-    if (this._validateProposedAttributes()) {
+    if (val = this._validateProposedAttributes()) {
       this._updateLayout();
     }
     return YES;
@@ -131,11 +107,16 @@ BBA.OccupancyItemView = SC.View.extend(
   },
 
   mouseDown: function(evt) {
-    if (this.get('isBusy')) evt.stop();
-    var beginsAt = this.getPath('content.beginsAt');
-    this._initProposedAttributes();
-    this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });
-    this._reservationBeginHour = beginsAt.get('hour');
+    if (this.get('isBusy')) {
+      evt.stop();
+    } else if (this._checkForHandleEvent(evt.target)) {
+      this.mouseDownInHandle(evt);
+    } else {
+      var beginsAt = this.getPath('content.beginsAt');
+      this._initProposedAttributes();
+      this._pointInItem = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY });
+      this._reservationBeginHour = beginsAt.get('hour');
+    }
     return YES;
   },
 
@@ -206,6 +187,21 @@ BBA.OccupancyItemView = SC.View.extend(
       if (content.isOutage) context.addClass('outage');
       if (content.classNames) context.addClass(content.classNames);
     }
+  },
+
+  /**
+    Check if given target is right or left handle.
+
+    @returns Boolean
+  */
+  _checkForHandleEvent: function(target) {
+    var classes = target.className.split(' '),
+        isHandleEvent = classes.indexOf('occupancy-item-handle-view') !== -1;
+    if (isHandleEvent) {
+      if (classes.indexOf('left') !== -1) this._isLeftHandleEvent = YES;
+      else this._isRightHandleEvent = YES;
+    }
+    return isHandleEvent;
   },
 
   /** @private
