@@ -191,13 +191,8 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   },
 
   displayDidChange: function() {
-    var headerView = this.get('headerView'),
-        gridView = this.get('gridView');
+    var headerView = this.get('headerView');
     if (headerView) headerView.periodDidChange();
-    if (gridView) {
-      gridView.destroyLayer();
-      gridView.reload();
-    }
   },
 
   // ..........................................................

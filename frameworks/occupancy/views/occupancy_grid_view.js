@@ -54,6 +54,20 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   // SUBCLASS METHODS
   //
 
+  /**
+    Recalculate layout for each child when grid view is resized
+  */
+  viewDidResize: function() {
+    var childViews = this.get('childViews'),
+        idx, len = childViews.get('length');
+    for (idx=0; idx<len; ++idx) {
+      childViews[idx].adjust(this.layoutForContentIndex(idx));
+    }
+  },
+
+  /**
+    Returns a layout for child view with given index.
+  */
   layoutForContentIndex: function(contentIndex) {
     var item = this.get('content').objectAt(contentIndex);
     if (item) return this._layoutForContentItem(item);

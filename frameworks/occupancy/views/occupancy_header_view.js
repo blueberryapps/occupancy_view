@@ -32,32 +32,6 @@ BBA.OccupancyHeaderView = SC.View.extend(
   }),
 
   // ..........................................................
-  // EVENT HANDLERS
-  //
-
-  /*
-  mouseDown: function(evt) {
-    this._lastX = evt.pageX;
-    return YES;
-  },
-
-  mouseDragged: function(evt) {
-    var offset = evt.pageX - this._lastX,
-        frame = this.get('frame'),
-        occupancyGridView = this.getPath('occupancyView.scrollView');
-    this.adjust('left', frame.x + offset);
-    occupancyGridView.incrementProperty('horizontalScrollOffset', -offset);
-    this._lastX = evt.pageX;
-    return YES;
-  },
-
-  mouseUp: function(evt) {
-    this._lastX = null;
-    return YES;
-  },
-  */
-
-  // ..........................................................
   // METHODS
   //
 
