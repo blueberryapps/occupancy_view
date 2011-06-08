@@ -90,7 +90,7 @@ BBA.OccupancyItemView = SC.View.extend(
       period = gridView._alignPeriod(date, null);
       this._setProposedAttribute('beginsAt', period.get('start'));
     }
-    if (val = this._validateProposedAttributes()) {
+    if (this._validateProposedAttributes()) {
       this._updateLayout();
     }
     return YES;

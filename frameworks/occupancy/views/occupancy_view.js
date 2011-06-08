@@ -196,7 +196,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   },
 
   // ..........................................................
-  // SUBCLASS METHODS
+  // METHODS
   //
 
   scrollToDate: function(date) {
@@ -209,8 +209,8 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       });
       offset = this.get('columnWidth') * Math.floor(periodTillDate.get('lengthInDays'));
       this.get('scrollView').set('horizontalScrollOffset', offset);
-    }
-    return NO;
+      return YES;
+    } else return NO;
   },
 
   // ..........................................................
@@ -280,6 +280,15 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   }.property('reservables').cacheable(),
 
   // ..........................................................
+  // PRIVATE METHODS
+  //
+
+  /** @private */
+  _reservationsEnumDidChange: function() {
+    this.notifyPropertyChange('itemsForGridView');
+  },
+
+  // ..........................................................
   // OBSERVERS
   //
 
@@ -289,18 +298,17 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   }.observes('period'),
 
   /** @private */
-  _gridViewShouldUpdate: function(a) {
+  _reservablesDidChange: function(a) {
     this.get('gridView').updateGridHeight();
-    this.notifyPropertyChange('reservableOutages');
-  }.observes('reservations', 'reservables'),
+  }.observes('reservables'),
 
   /** @private */
   _reservationsDidChange: function() {
     var reservations = this.get('reservations');
     if (this._oldReservations) {
-      this._oldReservations.removeObserver('[]', this, '_gridViewShouldUpdate');
+      this._oldReservations.removeObserver('[]', this, '_reservationsEnumDidChange');
     }
-    reservations.addObserver('[]', this, '_gridViewShouldUpdate');
+    reservations.addObserver('[]', this, '_reservationsEnumDidChange');
     this._oldReservations = reservations;
   }.observes('reservations')
 

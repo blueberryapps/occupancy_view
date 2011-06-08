@@ -47,7 +47,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   updateGridHeight: function() {
     var reservablesLength = this.getPath('reservables.length'),
         rowHeight = this.get('rowHeight');
-    this.adjust('height', rowHeight * (reservablesLength));
+    this.adjust('height', rowHeight * reservablesLength);
   },
 
   // ..........................................................
@@ -58,6 +58,7 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     Recalculate layout for each child when grid view is resized
   */
   viewDidResize: function() {
+    sc_super();
     var childViews = this.get('childViews'),
         idx, len = childViews.get('length');
     for (idx=0; idx<len; ++idx) {
