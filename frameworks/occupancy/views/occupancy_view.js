@@ -284,6 +284,11 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   //
 
   /** @private */
+  _reservablesEnumDidChange: function() {
+    this.notifyPropertyChange('reservables');
+  },
+
+  /** @private */
   _reservationsEnumDidChange: function() {
     this.notifyPropertyChange('itemsForGridView');
   },
@@ -299,6 +304,12 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
 
   /** @private */
   _reservablesDidChange: function(a) {
+    var reservables = this.get('reservables');
+    if (this._oldReservables) {
+      this._oldReservables.removeObserver('[]', this, '_reservablesEnumDidChange');
+    }
+    reservables.addObserver('[]', this, '_reservablesEnumDidChange');
+    this._oldReservables = reservables;
     this.get('gridView').updateGridHeight();
   }.observes('reservables'),
 
