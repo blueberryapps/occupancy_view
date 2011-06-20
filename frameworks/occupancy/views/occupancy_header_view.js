@@ -90,8 +90,14 @@ BBA.OccupancyHeaderView = SC.View.extend(
     for (idx=0; idx<len; ++idx) {
       label = childViews[idx];
       if (label) {
+        if (SC.DateTime.compareDate(label.get('value'), SC.DateTime.create()) === 0) {
+          label.get('classNames').pushObject('today');
+        } else {
+          label.get('classNames').removeObject('today');
+        }
         label.set('value', periodArray[idx]);
         label.adjust(this.layoutForContentIndex(idx));
+        label.displayDidChange();
       }
     }
   },
