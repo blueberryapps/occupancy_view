@@ -1,106 +1,121 @@
 /*
- * CSS styles for Valhalla.OccupancyView
+ * CSS styles for BBA.OccupancyView
  */
 
-.occupancy-view .occupancy-header {
-  border-bottom: 1px solid #8B8B8B;
-  background: -moz-linear-gradient(top, #ffffff, #d9d9d9);
-  background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#d9d9d9));
-  background: -o-linear-gradient(top, #ffffff, #d9d9d9);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9d9d9');
-  /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
-  /*Element must have a height (not auto)*/
-  /*All filters must be placed together*/
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9d9d9')";
-  /*Element must have a height (not auto)*/
-  /*All filters must be placed together*/
-  background: linear-gradient(top, #ffffff, #d9d9d9);
-  /*--IE9 DOES NOT SUPPORT GRADIENT BACKGROUNDS--*/
-}
-.occupancy-view .occupancy-header .sc-label-view {
-  border-left: 1px solid #8B8B8B;
-  padding-left: 4px;
-  line-height: 20px;
-  text-shadow: #FFF 0 1px 0;
-  font-size: 95%;
-  color: #444;
-}
-.occupancy-view .occupancy-header .sc-label-view.today {
-  font-weight: bold !important;
-}
+.occupancy-view {
 
-.occupancy-view .occupancy-reservables-container {
-  border-top: 1px solid #8B8B8B;
-}
-.occupancy-view .occupancy-reservables-list {
-}
-.occupancy-view .occupancy-right-container {
-  border-left: 1px solid #8B8B8B;
-}
-.occupancy-view .occupancy-reservables-list .sc-collection-item,
-.sc-theme .occupancy-view .occupancy-reservables-list .sc-collection-item.odd {
-  background-color: #CACACA;
-  color: black;
-  text-shadow: #F9F9F9 0 1px 0;
-}
-.occupancy-view .occupancy-reservables-list .sc-collection-item .sc-outline {
-  border-bottom: 1px solid #8B8B8B;
-}
+  .occupancy-header {
+    border-bottom: 1px solid #8B8B8B;
+    background: -moz-linear-gradient(top, #ffffff, #d9d9d9);
+    background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#d9d9d9));
+    background: -o-linear-gradient(top, #ffffff, #d9d9d9);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9d9d9');
+    /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9d9d9')";
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    background: linear-gradient(top, #ffffff, #d9d9d9);
+    /*--IE9 DOES NOT SUPPORT GRADIENT BACKGROUNDS--*/
 
-.occupancy-view .occupancy-grid-view {
-  background-color: #fff;
-}
+    .sc-label-view {
+      border-left: 1px solid #8B8B8B;
+      padding-left: 4px;
+      line-height: 20px;
+      text-shadow: #FFF 0 1px 0;
+      font-size: 95%;
+      color: #444;
+    }
+    .sc-label-view.today {
+      font-weight: bold !important;
+    }
+  }
 
-/** Item view */
-.occupancy-view .occupancy-item-view .outline {
-  background-color: #eee;
-  padding: 0 5px;
-  border: 1px solid #999;
-  height: 21px;
-  line-height: 22px;
-}
+  .occupancy-reservables-container {
+    border-top: 1px solid #8B8B8B;
+  }
+  .occupancy-right-container {
+    border-left: 1px solid #8B8B8B;
+  }
+  .occupancy-reservables-list {
+    .sc-collection-item,
+    .sc-collection-item.odd {
+      background-color: #CACACA;
+      color: black;
+      text-shadow: #F9F9F9 0 1px 0;
+    }
+    .sc-collection-item .sc-outline {
+      border-bottom: 1px solid #8B8B8B;
+    }
+  }
 
-/** Item handle view */
-.occupancy-view .occupancy-item-handle-view {
-  background-color: #999;
-  cursor: col-resize;
-  position: absolute;
-  width: 5px;
-  top: 0;
-  bottom: 0;
-}
-.occupancy-view .occupancy-item-handle-view.left {
-  left: 0;
-}
-.occupancy-view .occupancy-item-handle-view.right {
-  top: 0;
-  right: 0;
-}
+  .occupancy-grid-view {
+    background-color: #fff;
+    .horizontal-separator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #ddd;
+    }
+    .vertical-separator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #ddd;
+    }
+  }
 
+  /** Item view */
+  .occupancy-item-view {
+    .outline {
+      background-color: #eee;
+      padding: 0 5px;
+      border: 1px solid #999;
+      height: 21px;
+      line-height: 22px;
+    }
+    &.ghost {
+      opacity: .6;
+    }
+    &.disabled {
+      border-color: #FFF;
+      color: #ccc;
+      .disabled .occupancy-item-handle-view {
+        cursor: pointer;
+      }
+    }
+    &.outage {
+      .occupancy-item-handle-view {
+        cursor: default;
+        background-color: transparent;
+      }
+      .outline {
+        border-color: #a00;
+        background-color: #c00;
+        color: #fff;
+      }
+    }
+  }
 
-/** outage item view */
-.occupancy-view .occupancy-item-view.outage .outline {
-  border-color: #a00;
-  background-color: #c00;
-  color: #fff;
-}
-.occupancy-view .outage .occupancy-item-handle-view {
-  cursor: default;
-  background-color: transparent;
-}
+  /** Item handle view */
+  .occupancy-item-handle-view {
+    background-color: #999;
+    cursor: col-resize;
+    position: absolute;
+    width: 5px;
+    top: 0;
+    bottom: 0;
+    &.left {
+      left: 0;
+    }
+    &.right {
+      top: 0;
+      right: 0;
+    }
+  }
 
-/** Ghost item view */
-.occupancy-view .occupancy-item-view.ghost {
-  opacity: .6;
 }
-
-/** Disabled item view */
-.occupancy-view .occupancy-item-view.disabled {
-  border-color: #FFF;
-  color: #ccc;
-}
-.occupancy-view .occupancy-item-view.disabled .occupancy-item-handle-view {
-  cursor: pointer;
-}
-
 

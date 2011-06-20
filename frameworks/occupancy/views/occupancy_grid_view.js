@@ -75,6 +75,15 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     return null;
   },
 
+  /**
+    Subclassed render method. Calls the super and then renders
+    grid lines.
+  */
+  render: function(context) {
+    sc_super();
+    this._renderGridLines(context);
+  },
+
   // ..........................................................
   // EVENT METHODS
   //
@@ -168,6 +177,26 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   // ..........................................................
   // PRIVATE METHODS
   //
+
+  /** @private
+    Renders grid's horizontal and vertical lines.
+  */
+  _renderGridLines: function(context) {
+    var reservablesLen = this.getPath('reservables.length') - 1,
+        periodLen = this.getPath('occupancyView.period.lengthInDays')
+        rowHeight = this.get('rowHeight'),
+        columnWidth = this.getPath('occupancyView.columnWidth');
+    for (idx=0; idx<reservablesLen; ++idx) {
+      context.begin('div').addClass('horizontal-separator').addStyle({
+        top: rowHeight * (idx + 1) - 1
+      }).end();
+    }
+    for (idx=0; idx<periodLen; ++idx) {
+      context.begin('div').addClass('vertical-separator').addStyle({
+        left: columnWidth * (idx + 1)
+      }).end();
+    }
+  },
 
   /** @private
     Returns layout hash for given item.
