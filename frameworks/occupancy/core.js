@@ -4,6 +4,8 @@
 // ==========================================================================
 /*globals BBA */
 
+sc_require('ext/datetime');
+
 /** @namespace
 
   BlueberryApps framework namespace.
