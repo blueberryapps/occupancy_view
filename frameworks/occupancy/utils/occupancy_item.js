@@ -53,7 +53,7 @@ BBA.OccupancyItem = SC.Object.extend({
         owner = this.get('owner');
 
     // If period ends on the same day that begins, adjust it
-    if (start && end && SC.DateTime.compareDate(start, end) >= 0) {
+    if (start && end && SC.DateTime.compareDateWithoutTimeZone(start, end) >= 0) {
       end = start.advance({ day: 1 });
     }
 
