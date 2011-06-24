@@ -172,6 +172,16 @@ BBA.OccupancyItemView = SC.View.extend(
     return YES;
   },
 
+  doubleClick: function() {
+    var occupancyView = this.getPath('owner.occupancyView'),
+        action = occupancyView.get('reservationOpenAction'),
+        target = occupancyView.get('reservationOpenTarget'),
+        rootResponder = this.getPath('pane.rootResponder');
+    if (action && rootResponder) {
+      rootResponder.sendAction(action, target, this, this.get('pane'));
+    }
+  },
+
   // ..........................................................
   // PRIVATE METHODS
   //
