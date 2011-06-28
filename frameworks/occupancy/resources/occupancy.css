@@ -70,6 +70,7 @@
 
   /** Item view */
   .occupancy-item-view {
+    cursor: pointer;
     .outline {
       background-color: #eee;
       padding: 0 5px;
