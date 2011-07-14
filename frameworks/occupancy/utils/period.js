@@ -69,12 +69,34 @@ BBA.Period = SC.Object.extend(
     }
   }.property('start', 'end').cacheable(),
 
-
   // ..........................................................
   // METHODS
   //
 
-  dateInPeriod: function(date) {
+  /**
+    Advances period (modified it in place).
+
+    @param {Object} Parameters object.
+    @returns {BBA.Period} Receiver.
+  */
+  advance: function(hash) {
+    var start = this.get('start');
+    var end = this.get('end');
+    this.beginPropertyChanges();
+    this.set('start', start.advance(hash));
+    this.set('end', end.advance(hash));
+    this.endPropertyChanges();
+    return this;
+  },
+
+  /**
+    Check if given date is in period. Returns `YES` if it is,
+    otherwise returns `NO`.
+
+    @param {SC.DateTime} date
+    @returns {Boolean}
+  */
+  isDateInPeriod: function(date) {
     var start = this.get('start'),
         end = this.get('end');
 
@@ -89,16 +111,11 @@ BBA.Period = SC.Object.extend(
   },
 
   /**
-    Check if given date is in period. Returns `YES` if it is,
-    otherwise returns `NO`.
+    Returns the intersection of `this` and given period.
 
-    @param {SC.DateTime} date
-    @returns {Boolean}
+    @param {BBA.Period} otherPeriod
+    @returns {BBA.Period}
   */
-  isDateInPeriod: function(date) {
-    return this.dateInPeriod(date);
-  },
-
   intersect: function(otherPeriod) {
     var s1 = this.get('start'),
         e1 = this.get('end'),
@@ -112,6 +129,13 @@ BBA.Period = SC.Object.extend(
     return BBA.Period.create({ start: min, end: max });
   },
 
+  /**
+    Returns the intersection of `this` and given period
+    rounded to whole days.
+
+    @param {BBA.Period} otherPeriod
+    @returns {BBA.Period}
+  */
   intersectDays: function(otherPeriod) {
     var s1 = this.get('start'),
         e1 = this.get('end'),
@@ -122,9 +146,14 @@ BBA.Period = SC.Object.extend(
     var max = SC.DateTime.compare(e1, e2) < 0 ? e1 : e2;
     if (SC.DateTime.compare(max, min) < 0) return null;
 
-    return BBBBA.Period.create({ start: min.adjust({ hour: 0 }), end: max.adjust({ hour: 0 }) });
+    return BBA.Period.create({ start: min.adjust({ hour: 0 }), end: max.adjust({ hour: 0 }) });
   },
 
+  /**
+    Returns array with items for each day in this period
+
+    @returns {BBA.Period}
+  */
   toArray: function() {
     var start = this.get('start'),
         len   = this.get('lengthInDays'),
