@@ -25,8 +25,12 @@ BBA.OccupancyHeaderView = SC.View.extend(
   */
   exampleView: SC.LabelView.extend({
     classNames: 'occupancy-header-label'.w(),
-    formatter: function(a, b) {
-      return a && a.toFormattedString('%d. %m. %y');
+    formatter: function(date) {
+      if (date) {
+        var day = date.toFormattedString('%a').loc();
+        var date = date.toFormattedString('%d. %m');
+        return '%@ %@'.fmt(day, date);
+      }
     },
     textAlign: SC.ALIGN_CENTER
   }),
