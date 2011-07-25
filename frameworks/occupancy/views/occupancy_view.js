@@ -184,7 +184,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   viewDidResize: function() {
     sc_super();
     var frame = this.get('frame');
-    this._gridWidth = frame.width*3;
+    this._gridWidth = frame.width * 2;
     this.get('headerView').adjust('width', this._gridWidth);
     this.get('gridView').adjust('width', this._gridWidth);
     this.displayDidChange();

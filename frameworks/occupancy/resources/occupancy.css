@@ -57,14 +57,14 @@
       left: 0;
       right: 0;
       height: 1px;
-      background-color: #ddd;
+      background-color: #aaa;
     }
     .vertical-separator {
       position: absolute;
       top: 0;
       bottom: 0;
       width: 1px;
-      background-color: #ddd;
+      background-color: #aaa;
     }
   }
 
