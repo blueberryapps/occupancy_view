@@ -78,6 +78,14 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   */
   newReservationTarget: null,
 
+  minimumHorizontalScrollAction: null,
+
+  minimumHorizontalScrollTarget: null,
+
+  maximumHorizontalScrollAction: null,
+
+  maximumHorizontalScrollTarget: null,
+
   /**
     Reservables for grid view.
 
@@ -149,16 +157,24 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       contentView: BBA.OccupancyGridView.design({
       }),
       verticalScrollOffsetDidChange: function() {
-        var reservablesList = this.getPath('parentView.parentView.reservablesList'),
-            frame = reservablesList.get('frame'),
-            offset = this.get('verticalScrollOffset');
+        var reservablesList = this.getPath('parentView.parentView.reservablesList');
+        var frame = reservablesList.get('frame');
+        var offset = this.get('verticalScrollOffset');
         reservablesList.get('contentView').adjust('top', - offset);
       }.observes('verticalScrollOffset'),
       horizontalScrollOffsetDidChange: function() {
-        var headerView = this.getPath('parentView.headerView'),
-            frame = headerView.get('frame'),
-            offset = this.get('horizontalScrollOffset');
+        var occupancyView = this.getPath('parentView.parentView');
+        var headerView = this.getPath('parentView.headerView');
+        var frame = headerView.get('frame');
+        var offset = this.get('horizontalScrollOffset');
+        var minimumOffset = this.get('minimumHorizontalScrollOffset');
+        var maximumOffset = this.get('maximumHorizontalScrollOffset');
         headerView.adjust('left', - offset);
+        if (minimumOffset === offset) {
+          occupancyView.fireAction('minimumScrollOffsetAction', 'minimumScrollOffsetTarget', this);
+        } else if (maximumOffset === offset) {
+          occupancyView.fireAction('maximumScrollOffsetAction', 'maximumScrollOffsetTarget', this);
+        }
       }.observes('horizontalScrollOffset')
     })
   }),
@@ -211,6 +227,15 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       this.get('scrollView').set('horizontalScrollOffset', offset);
       return YES;
     } else return NO;
+  },
+
+  fireAction: function(actionProperty, targetProperty, sender) {
+    var action = this.get(actionProperty);
+    var target = this.get(targetProperty);
+    var rootResponder = this.getPath('pane.rootResponder');
+    if (action && rootResponder) {
+      rootResponder.sendAction(action, target, sender || this, this.get('pane'));
+    }
   },
 
   // ..........................................................
