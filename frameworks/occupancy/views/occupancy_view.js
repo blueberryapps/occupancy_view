@@ -170,6 +170,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
         var minimumOffset = this.get('minimumHorizontalScrollOffset');
         var maximumOffset = this.get('maximumHorizontalScrollOffset');
         headerView.adjust('left', - offset);
+        occupancyView.notifyPropertyChange('scrollOffset');
         if (minimumOffset === offset) {
           occupancyView.fireAction('minimumScrollOffsetAction', 'minimumScrollOffsetTarget', this);
         } else if (maximumOffset === offset) {
@@ -303,6 +304,14 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     }
     return outages;
   }.property('reservables').cacheable(),
+
+  scrollOffset: function(key, value) {
+    if (value === undefined) {
+      return this.getPath('scrollView.horizontalScrollOffset');
+    } else {
+      this.setPath('scrollView.horizontalScrollOffset', value);
+    }
+  }.property('scrollView'),
 
   // ..........................................................
   // PRIVATE METHODS

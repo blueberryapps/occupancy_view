@@ -82,11 +82,10 @@ BBA.Period = SC.Object.extend(
   advance: function(hash) {
     var start = this.get('start');
     var end = this.get('end');
-    this.beginPropertyChanges();
-    this.set('start', start.advance(hash));
-    this.set('end', end.advance(hash));
-    this.endPropertyChanges();
-    return this;
+    return BBA.Period.create({
+      start: start.advance(hash),
+      end: end.advance(hash)
+    });
   },
 
   /**
