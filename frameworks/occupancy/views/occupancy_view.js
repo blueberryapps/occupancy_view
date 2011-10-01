@@ -162,20 +162,35 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
         var offset = this.get('verticalScrollOffset');
         reservablesList.get('contentView').adjust('top', - offset);
       }.observes('verticalScrollOffset'),
+      invokeLaterIf: function(cond, func, receiver, time) {
+        if (cond.call(receiver)) {
+          this.invokeLater(function() {
+            if (cond.call(receiver)) func.call(receiver);
+          }, time);
+        }
+      },
       horizontalScrollOffsetDidChange: function() {
         var occupancyView = this.getPath('parentView.parentView');
         var headerView = this.getPath('parentView.headerView');
-        var frame = headerView.get('frame');
         var offset = this.get('horizontalScrollOffset');
-        var minimumOffset = this.get('minimumHorizontalScrollOffset');
-        var maximumOffset = this.get('maximumHorizontalScrollOffset');
         headerView.adjust('left', - offset);
         occupancyView.notifyPropertyChange('scrollOffset');
-        if (minimumOffset === offset) {
+        var isMinimum = function() {
+          var offset = this.get('horizontalScrollOffset');
+          var minimumOffset = this.get('minimumHorizontalScrollOffset');
+          return minimumOffset === offset;
+        };
+        this.invokeLaterIf(isMinimum, function() {
           occupancyView.fireAction('minimumScrollOffsetAction', 'minimumScrollOffsetTarget', this);
-        } else if (maximumOffset === offset) {
+        }, this, 800);
+        var isMaximum = function() {
+          var offset = this.get('horizontalScrollOffset');
+          var maximumOffset = this.get('maximumHorizontalScrollOffset');
+          return maximumOffset === offset;
+        };
+        this.invokeLaterIf(isMaximum, function() {
           occupancyView.fireAction('maximumScrollOffsetAction', 'maximumScrollOffsetTarget', this);
-        }
+        }, this, 800);
       }.observes('horizontalScrollOffset')
     })
   }),
