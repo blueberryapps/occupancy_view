@@ -312,10 +312,11 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     var reservables = this.get('reservables'),
         outages = [], reservableOutages;
     if (reservables) {
-      reservables.forEach(function(reservable) {
-        reservableOutages = reservable.get('outages');
+      var len = reservables.get('length'), idx, reservable;
+      for (idx=0; idx<len; idx++) {
+        reservableOutages = reservables.objectAt(idx).get('outages');
         if (reservableOutages.get('length') > 0) outages.pushObjects(reservableOutages);
-      });
+      }
     }
     return outages;
   }.property('reservables').cacheable(),
