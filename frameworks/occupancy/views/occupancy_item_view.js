@@ -30,7 +30,7 @@ BBA.OccupancyItemView = SC.View.extend(
     context.begin('div').addClass('occupancy-item-handle-view left'.w()).end();
     context.begin('div').addClass('occupancy-item-handle-view right'.w()).end();
     context = context.begin('div').addClass('outline');
-    context.push(this._contentTitle());
+    context.push(this.get('contentTitle'));
     context.end();
   },
 
@@ -210,14 +210,14 @@ BBA.OccupancyItemView = SC.View.extend(
 
     @returns {String} A title.
   */
-  _contentTitle: function() {
+  contentTitle: function() {
     var content = this.get('content');
     if (content) {
       return content.toString();
     } else {
       return sc_super();
     }
-  },
+  }.property('content').cacheable(),
 
   /** @private */
   _initProposedAttributes: function() {

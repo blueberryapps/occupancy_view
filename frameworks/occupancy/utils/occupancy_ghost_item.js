@@ -12,8 +12,7 @@ BBA.OccupancyGhostItem = BBA.OccupancyItem.extend({
 
   align: function(owner) {
     owner = owner || this.get('owner');
-    var alignedPeriod = owner._alignPeriod(this.get('startsAt'),
-                                                       this.get('endsAt'));
+    var alignedPeriod = owner._alignPeriod(this.get('startsAt'), this.get('endsAt'));
     this.set('startsAt', alignedPeriod.get('start'));
     this.set('endsAt', alignedPeriod.get('end'));
     return alignedPeriod;
