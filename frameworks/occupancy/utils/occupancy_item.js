@@ -12,7 +12,7 @@ BBA.OccupancyItem = SC.Object.extend({
     @type SC.DateTime
     @default null
   */
-  startsAt: null,
+  beginsAt: null,
 
   /**
     End of reservation.

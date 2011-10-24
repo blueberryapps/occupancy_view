@@ -91,12 +91,13 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
   mouseDown: function(evt) {
     sc_super();
     this._lastPoint = this.convertFrameFromView({ x: evt.pageX, y: evt.pageY }, null);
-    var reservable = this._reservableForTopOffset(this._lastPoint.y);
+    var reservable = this._reservableForTopOffset(this._lastPoint.y),
+        dateTime = this._dateTimeForLeftOffset(this._lastPoint.x);
     this._ghostItem = BBA.OccupancyGhostItem.create({
       owner: this,
       reservableId: reservable && reservable.get('id'),
-      beginsAt: this._dateTimeForLeftOffset(this._lastPoint.x),
-      endsAt: this._dateTimeForLeftOffset(this._lastPoint.x)
+      beginsAt: dateTime,
+      endsAt: dateTime
     });
     this._ghostItem.align();
     return YES;
@@ -116,10 +117,11 @@ BBA.OccupancyGridView = SC.CollectionView.extend(
     var del = this.getPath('delegate');
     if (del && del.validateProposedChange) {
       var proposed = SC.copy(ghostItem);
-      proposed.set('endsAt', endsAt);
+      var alignedEndsAt = this._alignPeriod(null, endsAt).get('end');
+      proposed.set('endsAt', alignedEndsAt);
       if (del.validateProposedChange(null, proposed)) {
         proposed.destroy();
-        ghostItem.set('endsAt', endsAt);
+        ghostItem.set('endsAt', alignedEndsAt);
       } else {
         proposed.destroy();
         return;
