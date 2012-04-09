@@ -90,11 +90,12 @@ BBA.OccupancyHeaderView = SC.View.extend(
   updateChildViews: function() {
     var periodArray = this.getPath('occupancyView.periodArray'),
         childViews = this.get('childViews'),
+        now = SC.DateTime.create(),
         len = childViews.get('length'), idx, label;
     for (idx=0; idx<len; ++idx) {
       label = childViews[idx];
       if (label) {
-        if (SC.DateTime.compareDateWithoutTimeZone(label.get('value'), SC.DateTime.create()) === 0) {
+        if (SC.DateTime.compareDateWithoutTimeZone(label.get('value'), now) === 0) {
           label.get('classNames').pushObject('today');
         } else {
           label.get('classNames').removeObject('today');
@@ -121,7 +122,7 @@ BBA.OccupancyHeaderView = SC.View.extend(
     var exampleView, layout, classNames = [];
     exampleView = this.get('exampleView');
     if (SC.DateTime.compareDateWithoutTimeZone(value, SC.DateTime.create()) === 0) {
-      classNames = 'today'.w();
+      classNames = ['today'];
     }
     layout = this.layoutForContentIndex(contentIndex);
     this.appendChild(exampleView.create({
