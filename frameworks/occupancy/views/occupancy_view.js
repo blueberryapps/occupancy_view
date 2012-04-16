@@ -230,6 +230,17 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // ..........................................................
   // METHODS
   //
+  
+  scrollToStart: function() {
+    var period = this.get('period');
+    var periodTillDate, offset;
+    periodTillDate = BBA.Period.create({
+      start: period.get('start'),
+      end: period.get('start').advance({day: +3})
+    });
+    offset = this.get('columnWidth') * Math.floor(periodTillDate.get('lengthInDays'));
+    this.get('scrollView').set('horizontalScrollOffset', offset);
+  },
 
   scrollToDate: function(date) {
     var period = this.get('period');
