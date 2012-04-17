@@ -19,6 +19,8 @@ BBA.OccupancyItemView = SC.View.extend(
 
   titleKey: null,
 
+  clicks: 0,
+
   useOverlayAttributes: NO,
 
   // ..........................................................
@@ -151,6 +153,27 @@ BBA.OccupancyItemView = SC.View.extend(
   },
 
   mouseUp: function(evt) {
+    var self = this;
+    self.clicks = self.clicks + 1
+    if (self.clicks == 1) {
+      setTimeout(function() {
+        if (self.clicks == 1) {
+          self._singleClick(evt);
+        } else {
+          self._doubleClick();
+        }
+        self.clicks = 0;
+        return false;
+      }, 300);
+    }
+  },
+
+  _doubleClick: function() {
+    var occupancyView = this.getPath('owner.occupancyView');
+    occupancyView.fireAction('reservationOpenAction', 'reservationOpenTarget', this);
+  },
+
+  _singleClick: function(evt) {
     if (this.get('isBusy')) {
       evt.stop();
     } else if (this._isRightHandleEvent || this._isLeftHandleEvent) {
@@ -165,11 +188,6 @@ BBA.OccupancyItemView = SC.View.extend(
       occupancyView.fireAction('reservationAction', 'reservationTarget', this);
     }
     return YES;
-  },
-
-  doubleClick: function() {
-    var occupancyView = this.getPath('owner.occupancyView');
-    occupancyView.fireAction('reservationOpenAction', 'reservationOpenTarget', this);
   },
 
   // ..........................................................
