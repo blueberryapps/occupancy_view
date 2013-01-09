@@ -93,6 +93,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     @default null
   */
   reservables: null,
+  reservableDescriptionKey: null,
 
   /**
     A property key that will be used to display reservables title.
@@ -118,7 +119,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // CHILD VIEWS
   //
 
-  childViews: 'reservablesList rightView'.w(),
+  childViews: 'reservablesList descriptionList rightView'.w(),
 
   reservablesList: SC.ContainerView.design({
     classNames: 'occupancy-reservables-container',
@@ -130,10 +131,21 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       rowHeight: BBA.OCCUPANCY_ROW_HEIGHT
     })
   }),
+  
+  descriptionList: SC.ContainerView.design({
+    classNames: 'occupancy-reservables-container',
+    layout: { top: BBA.OCCUPANCY_HEADER_HEIGHT, left: 90, bottom: 14, width: 90 },
+    contentView: SC.ListView.design({
+      classNames: 'occupancy-reservables-list',
+      contentBinding: '.parentView.parentView.reservablesDescriptions',
+      isSelectable: NO,
+      rowHeight: BBA.OCCUPANCY_ROW_HEIGHT
+    })
+  }),
 
   rightView: SC.View.design({
     classNames: 'occupancy-right-container',
-    layout: { top: 0, right: 0, bottom: 0, left: 90 },
+    layout: { top: 0, right: 0, bottom: 0, left: 180 },
     childViews: 'headerView scrollView'.w(),
 
     /**
@@ -157,10 +169,12 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       contentView: BBA.OccupancyGridView.design({
       }),
       verticalScrollOffsetDidChange: function() {
-        var reservablesList = this.getPath('parentView.parentView.reservablesList');
+        var reservablesList = this.getPath('parentView.parentView.reservablesList'),
+            descriptionList = this.getPath('parentView.parentView.descriptionList')
         var frame = reservablesList.get('frame');
         var offset = this.get('verticalScrollOffset');
         reservablesList.get('contentView').adjust('top', - offset);
+        descriptionList.get('contentView').adjust('top', - offset);
       }.observes('verticalScrollOffset'),
       invokeLaterIf: function(cond, func, receiver, time) {
         if (cond.call(receiver)) {
@@ -331,6 +345,20 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     }
     return outages;
   }.property('reservables').cacheable(),
+  
+  
+  reservablesDescriptions: function() {
+    var reservables = this.get('reservables'),
+        descriptionKey = this.get('reservableDescriptionKey');
+        
+    if (reservables) {
+      var descriptions = reservables.map(function(reservable) {
+        return reservable.get(descriptionKey) || ''
+      })
+    }
+    
+    return descriptions
+  }.property('reservables', 'reservableDescriptionKey').cacheable(),
 
   scrollOffset: function(key, value) {
     if (value === undefined) {
