@@ -49,6 +49,14 @@
       border-bottom: 1px solid #8B8B8B;
     }
   }
+  
+  .occupancy-reservables-container:nth-child(2) {
+    .occupancy-reservables-list {
+      .sc-collection-item .sc-outline {
+        border-left: 1px solid #8B8B8B;
+      }
+    }
+  }
 
   .occupancy-grid-view {
     background-color: #fff;
