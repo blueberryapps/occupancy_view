@@ -120,7 +120,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // CHILD VIEWS
   //
 
-  childViews: 'reservablesList descriptionList accommodationCategoryList rightView'.w(),
+  childViews: 'reservablesList descriptionList rightView'.w(),
   
   accommodationCategoryList: SC.ContainerView.extend({
     layout: { top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, left: 0, width: 180, height: BBA.OCCUPANCY_ROW_HEIGHT * 6 },
@@ -132,6 +132,17 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       rowHeight: BBA.OCCUPANCY_ROW_HEIGHT
     })
 
+  }),
+  
+  availableContainerView: SC.View.extend({
+    classNames: 'occupancy-availability-container',
+    childViews: 'availableDetailedView'.w(),
+    layout: { left: 0, top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, height: BBA.OCCUPANCY_ROW_HEIGHT * 6 },
+    
+    availableDetailedView: BBA.OccupancyAvailabilityDetailedView.design({
+      layout: { left: 0, top: 0 },
+      contentBinding: '.parentView.parentView.availabilityDetailedArray'
+    }),
   }),
 
   reservablesList: SC.ContainerView.design({
@@ -159,18 +170,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   rightView: SC.View.design({
     classNames: 'occupancy-right-container',
     layout: { top: 0, right: 0, bottom: 0, left: 180 },
-    childViews: 'headerView scrollView availableContainerView'.w(),
-    
-    availableContainerView: SC.View.design({
-      classNames: 'occupancy-availability-container',
-      childViews: 'availableDetailedView'.w(),
-      layout: { left: 0, top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, height: BBA.OCCUPANCY_ROW_HEIGHT * 6 },
-      
-      availableDetailedView: BBA.OccupancyAvailabilityDetailedView.design({
-        layout: { left: 0, top: 0 },
-        contentBinding: '.parentView.parentView.availabilityDetailedArray'
-      }),
-    }),
+    childViews: 'headerView scrollView'.w(),
     
     /**
       A header view.
@@ -211,10 +211,10 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       horizontalScrollOffsetDidChange: function() {
         var occupancyView = this.getPath('parentView.parentView');
         var headerView = this.getPath('parentView.headerView');
-        var availableContainerView = this.getPath('parentView.parentView.availableContainerView')
+        var availableContainerView = occupancyView._availableContainerView
         var offset = this.get('horizontalScrollOffset');
         headerView.adjust('left', - offset);
-        availableContainerView.adjust('left', - offset);
+        if (availableContainerView) availableContainerView.adjust('left', - offset);
         occupancyView.notifyPropertyChange('scrollOffset');
         var isMinimum = function() {
           var offset = this.get('horizontalScrollOffset');
@@ -246,9 +246,9 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
 
   headerView: SC.outlet('rightView.headerView'),
     
-  availableContainerView: SC.outlet('rightView.availableContainerView'),
+  //availableContainerView: SC.outlet('rightView.availableContainerView'),
   
-  availableDetailedView: SC.outlet('rightView.availableContainerView.availableDetailedView'),
+  //availableDetailedView: SC.outlet('rightView.availableContainerView.availableDetailedView'),
   
   // ..........................................................
   // SUBCLASS METHODS
@@ -261,9 +261,10 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   viewDidResize: function() {
     sc_super();
     var frame = this.get('frame');
+    var availableContainerView = this._availableContainerView
     this._gridWidth = frame.width * 2;
     this.get('headerView').adjust('width', this._gridWidth);
-    this.get('availableContainerView').adjust('width', this._gridWidth);
+    if (availableContainerView) availableContainerView.adjust('width', this._gridWidth);
     this.get('gridView').adjust('width', this._gridWidth);
     this.displayDidChange();
   },
@@ -271,9 +272,12 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   displayDidChange: function() {
     var headerView = this.get('headerView');
     if (headerView) headerView.periodDidChange();
-  
-    var availableDetailedView = this.get('availableDetailedView');
-    if (availableDetailedView) availableDetailedView.periodDidChange();
+    
+    var availableContainerView = this._availableContainerView
+    if (availableContainerView) {
+      var availableDetailedView = availableContainerView.get('availableDetailedView');
+      if (availableDetailedView) availableDetailedView.periodDidChange();
+    }
   },
 
   // ..........................................................
@@ -492,8 +496,24 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   }.property('scrollView'),
   
   toggleAvailabilityPane: function() {
-    this.get('availableContainerView').$().toggle();
-    this.get('accommodationCategoryList').$().toggle();
+    var accommodationCategoryList = this._accommodationCategoryList;
+        availableContainerView = this._availableContainerView;
+        
+    if (accommodationCategoryList && availableContainerView) {
+      accommodationCategoryList.destroy();
+      availableContainerView.destroy();
+      this._accommodationCategoryList = null;
+      this._availableContainerView = null;
+      
+    } else {
+      this._accommodationCategoryList = this.get('accommodationCategoryList').create();
+      this._availableContainerView = this.get('availableContainerView').create();
+      
+      this.appendChild(this._accommodationCategoryList);
+      this.get('rightView').appendChild(this._availableContainerView);
+      
+      this._availableContainerView.get('availableDetailedView').periodDidChange();
+    }
   },
 
   // ..........................................................
@@ -514,15 +534,10 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // OBSERVERS
   //
   
-  didCreateLayer: function() {
-    this.get('availableContainerView').$().hide();
-    this.get('accommodationCategoryList').$().hide();
-  },
-  
   /** @private */
   _periodDidChange: function() {
     this.get('headerView').periodDidChange();
-    this.get('availableDetailedView').periodDidChange();
+    //this.get('availableDetailedView').periodDidChange();
   }.observes('period'),
 
   /** @private */
