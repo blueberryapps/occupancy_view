@@ -94,6 +94,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   */
   reservables: null,
   reservableDescriptionKey: null,
+  reservableCategories: null,
 
   /**
     A property key that will be used to display reservables title.
@@ -119,7 +120,19 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // CHILD VIEWS
   //
 
-  childViews: 'reservablesList descriptionList rightView'.w(),
+  childViews: 'reservablesList descriptionList accommodationCategoryList rightView'.w(),
+  
+  accommodationCategoryList: SC.ContainerView.extend({
+    layout: { top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, left: 0, width: 180, height: BBA.OCCUPANCY_ROW_HEIGHT * 6 },
+    
+    contentView: SC.ListView.design({
+      classNames: 'occupancy-reservables-list occupancy-reservable-categories-list'.w(),
+      contentBinding: '.parentView.parentView.reservableCategoryTitles',
+      isSelectable: NO,
+      rowHeight: BBA.OCCUPANCY_ROW_HEIGHT
+    })
+
+  }),
 
   reservablesList: SC.ContainerView.design({
     classNames: 'occupancy-reservables-container',
@@ -146,8 +159,19 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   rightView: SC.View.design({
     classNames: 'occupancy-right-container',
     layout: { top: 0, right: 0, bottom: 0, left: 180 },
-    childViews: 'headerView scrollView'.w(),
-
+    childViews: 'headerView scrollView availableContainerView'.w(),
+    
+    availableContainerView: SC.View.design({
+      classNames: 'occupancy-availability-container',
+      childViews: 'availableDetailedView'.w(),
+      layout: { left: 0, top: BBA.OCCUPANCY_HEADER_HEIGHT + 1, height: BBA.OCCUPANCY_ROW_HEIGHT * 6 },
+      
+      availableDetailedView: BBA.OccupancyAvailabilityDetailedView.design({
+        layout: { left: 0, top: 0 },
+        contentBinding: '.parentView.parentView.availabilityDetailedArray'
+      }),
+    }),
+    
     /**
       A header view.
 
@@ -170,7 +194,8 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       }),
       verticalScrollOffsetDidChange: function() {
         var reservablesList = this.getPath('parentView.parentView.reservablesList'),
-            descriptionList = this.getPath('parentView.parentView.descriptionList')
+            descriptionList = this.getPath('parentView.parentView.descriptionList'),
+            occupancyView = this.getPath('parentView.parentView');
         var frame = reservablesList.get('frame');
         var offset = this.get('verticalScrollOffset');
         reservablesList.get('contentView').adjust('top', - offset);
@@ -186,8 +211,10 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       horizontalScrollOffsetDidChange: function() {
         var occupancyView = this.getPath('parentView.parentView');
         var headerView = this.getPath('parentView.headerView');
+        var availableContainerView = this.getPath('parentView.parentView.availableContainerView')
         var offset = this.get('horizontalScrollOffset');
         headerView.adjust('left', - offset);
+        availableContainerView.adjust('left', - offset);
         occupancyView.notifyPropertyChange('scrollOffset');
         var isMinimum = function() {
           var offset = this.get('horizontalScrollOffset');
@@ -208,7 +235,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       }.observes('horizontalScrollOffset')
     })
   }),
-
+  
   /**
     A container view is used as a parent for CollectionView's
     childs.
@@ -218,7 +245,11 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   scrollView: SC.outlet('rightView.scrollView'),
 
   headerView: SC.outlet('rightView.headerView'),
-
+    
+  availableContainerView: SC.outlet('rightView.availableContainerView'),
+  
+  availableDetailedView: SC.outlet('rightView.availableContainerView.availableDetailedView'),
+  
   // ..........................................................
   // SUBCLASS METHODS
   //
@@ -232,6 +263,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     var frame = this.get('frame');
     this._gridWidth = frame.width * 2;
     this.get('headerView').adjust('width', this._gridWidth);
+    this.get('availableContainerView').adjust('width', this._gridWidth);
     this.get('gridView').adjust('width', this._gridWidth);
     this.displayDidChange();
   },
@@ -239,6 +271,9 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   displayDidChange: function() {
     var headerView = this.get('headerView');
     if (headerView) headerView.periodDidChange();
+  
+    var availableDetailedView = this.get('availableDetailedView');
+    if (availableDetailedView) availableDetailedView.periodDidChange();
   },
 
   // ..........................................................
@@ -310,7 +345,95 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
     if (period) return period.toArray();
     else return [];
   }.property('period').cacheable(),
+  
+  availabilityArray: function() {
+    console.log('Recalculating accommondation availability..');
+    
+    var reservables = this.get('reservables'),
+        reservations = this.get('reservations'),
+        period = this.get('period'),
+        results = [];
+    
+    if (period && reservables) {
+      var reservablesLen = reservables.get('length'),
+          dates = period.toArray(),
+          datesLen = dates.get('length'), idx, jdx;
+      
+      for (idx=0; idx<datesLen; ++idx) {
+        var date = dates[idx],
+            available = 0;
+            
+        period = this._periodForDate(date)
+        
+        availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
+        available = availableInPeriod.get('length');
+        
+        results.push(available);
+      }
+    }
+    
+    return results;
+  }.property('period', 'reservations').cacheable(),
+  
+  availabilityDetailedArray: function() {
+    var reservations = this.get('reservations'),
+        reservables = this.get('reservables'),
+        reservableTypes = this.get('reservableCategories'),
+        period = this.get('period'),
+        results = [], idx, jdx;
+      
+    if (period && reservables && reservableTypes) {
+      var dates = period.toArray(),
+          datesLen = dates.get('length'),
+          reservableTypesLen = reservableTypes.get('length');
+      
+      for (idx=0; idx<datesLen; ++idx) {
+        var date = dates[idx],
+            resultsForDate = [];
+        
+        period = this._periodForDate(date)
+        availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
+        
+        for (jdx=0; jdx<reservableTypesLen; ++jdx) {
+          var type = reservableTypes.objectAt(jdx)
+          
+          var count = availableInPeriod.filter(function(a) {
+            return a.get('type') === type
+          }).get('length')
+          
+          resultsForDate.push(count)
+        };
+                
+        results.push(resultsForDate)
+      }
+    }
+          
+    return results;
+  }.property('period', 'reservations').cacheable(),
+  
+  reservableCategoryTitles: function(){
+    var reservableCategories = this.get('reservableCategories');
+        
+    if (reservableCategories) {
+      var reservableCategoriesLen = reservableCategories.get('length'), idx, results = [];
 
+      for (idx=0; idx<reservableCategoriesLen; ++idx) {
+        var category = reservableCategories.objectAt(idx);
+        results.push(category.toString());
+      }
+      
+      results.push('Celkem: ');
+      return results;
+    }
+  }.property('reservableCategories').cacheable(),
+
+  _periodForDate: function(date) {
+    return His.Period.create({
+      start: date,
+      end: SC.copy(date).advance({ day: 1 })
+    })
+  },
+  
   /**
     Items that will be display on grid view - reservations and
     reservable outages.
@@ -367,6 +490,11 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
       this.setPath('scrollView.horizontalScrollOffset', value);
     }
   }.property('scrollView'),
+  
+  toggleAvailabilityPane: function() {
+    this.get('availableContainerView').$().toggle();
+    this.get('accommodationCategoryList').$().toggle();
+  },
 
   // ..........................................................
   // PRIVATE METHODS
@@ -385,10 +513,16 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
   // ..........................................................
   // OBSERVERS
   //
-
+  
+  didCreateLayer: function() {
+    this.get('availableContainerView').$().hide();
+    this.get('accommodationCategoryList').$().hide();
+  },
+  
   /** @private */
   _periodDidChange: function() {
     this.get('headerView').periodDidChange();
+    this.get('availableDetailedView').periodDidChange();
   }.observes('period'),
 
   /** @private */

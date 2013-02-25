@@ -34,6 +34,10 @@ BBA.OccupancyHeaderView = SC.View.extend(
     },
     textAlign: SC.ALIGN_CENTER
   }),
+  
+  mouseDown: function() {
+    this.get('occupancyView').toggleAvailabilityPane();
+  },
 
   // ..........................................................
   // METHODS
