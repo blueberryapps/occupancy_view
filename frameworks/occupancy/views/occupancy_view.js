@@ -369,7 +369,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
             
         period = this._periodForDate(date)
         
-        availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
+        var availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
         available = availableInPeriod.get('length');
         
         results.push(available);
@@ -396,7 +396,7 @@ BBA.OccupancyView = SC.View.extend(SC.Border, {
             resultsForDate = [];
         
         period = this._periodForDate(date)
-        availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
+        var availableInPeriod = His.Accommodation.availableInPeriod(period, reservations)
         
         for (jdx=0; jdx<reservableTypesLen; ++jdx) {
           var type = reservableTypes.objectAt(jdx)
